@@ -1,0 +1,22 @@
+-- Renamed function to reflect purpose of removing a specified player from the current user's party
+function removeFromParty(playerId, memberName)
+  local player = Player(playerId)
+  local party = player:getParty()
+  -- Included new variable containing all members of the party
+  local partyMembers = party:getMembers()
+
+  -- Updated variable names for additional clarity while evaluating party members
+  for k, member in pairs(partyMembers) do
+    if member:getName() == memberName then
+      -- Updated function call to remove the current player being evaluated in the loop rather than create a new Player object
+      party:removeMember(member)
+      -- Added print line to confirm the player was removed
+      print("Removed player '" .. memberName .. "' from party.")
+      -- Exit the loop and function once the player has been found and removed
+      return true
+    end
+  end
+  -- Added print line if no matching players were found in the party
+  print("Player '" .. memberName .. "' not found in party.")
+  return false
+end
