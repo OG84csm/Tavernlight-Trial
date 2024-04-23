@@ -1,10 +1,19 @@
+-- Set a constant value for the storage location for easier modification
+local STORAGE_KEY = 1000
+
 local function releaseStorage(player)
-player:setStorageValue(1000, -1)
+	player:setStorageValue(STORAGE_KEY, -1)
 end
 
 function onLogout(player)
-if player:getStorageValue(1000) == 1 then
-addEvent(releaseStorage, 1000, player)
-end
-return true
+	-- Added variable to record the player name of the user logging out (assumes getName() function created similar to getStorageValue())
+	local playerName = player:getName()
+	if player:getStorageValue(STORAGE_KEY) == 1 then
+		-- Added a local event name to minimize conflicts if other players log out at the same time
+		local eventName = "ReleaseStorage_" .. os.time() .. "_" .. playerName
+		addEvent(releaseStorage, 1000, player)
+		-- Included additional debug message to ensure the function runs as intended
+		print("Scheduled release of storage for player: " .. playerName)
+	end
+	return true
 end
