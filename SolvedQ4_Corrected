@@ -1,17 +1,18 @@
-Assume all method calls work fine. Fix the memory leak issue in below method
-
 void Game::addItemToPlayer(const std::string& recipient, uint16_t itemId)
 {
   Player* player = g_game.getPlayerByName(recipient);
   if (!player) {
     player = new Player(nullptr);
     if (!IOLoginData::loadPlayerByName(player, recipient)) {
+      delete player;  // Deallocate memory if player is null
       return;
     }
   }
 
   Item* item = Item::CreateItem(itemId);
   if (!item) {
+    delete player;  // Deallocate player memory if item was not created successfully
+    delete item;  // Deallocate item memory if item was not created successfully
     return;
   }
 
@@ -19,5 +20,10 @@ void Game::addItemToPlayer(const std::string& recipient, uint16_t itemId)
 
   if (player->isOffline()) {
     IOLoginData::savePlayer(player);
+  }
+
+  delete item;  // Ensure item memory is deallocated if not already completed
+  if (!g_game.getPlayerByName(recipient)){
+    delete player; // Ensure player memory is deallocated if created in the method
   }
 }
